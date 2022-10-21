@@ -5,7 +5,9 @@
 
 import numpy as np
 import scanpy as sc
-import rpy2.robjects as robjects
+import rpy2.robjects as ro
+import anndata2ri
+anndata2ri.activate()
 
 '''
 1- Разбиение одного объекта AnnData на список других, соответствующих каждому индивидуальному батчу;
@@ -60,6 +62,7 @@ def save_adata_as_rds(adata, save_path):
   outputs:
     - 
   '''
-  # возможно нужно чначала сделать seurat object а потом сохранять 
-  saveRDS = robjects.r['saveRDS']
-  saveRDS(adata, 'del.rds')
+  ro.globalenv["adata"] = adata
+  ro.globalenv["save_path"] = save_path
+  ro.r('saveRDS(as.Seurat(adata), file = save_path)')
+  
